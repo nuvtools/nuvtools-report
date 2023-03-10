@@ -1,0 +1,3 @@
+nuget.exe push -Source "nuvtools" -ApiKey az NuvTools.Report.7.0.0.nupkg
+nuget.exe push -Source "nuvtools" -ApiKey az NuvTools.Report.Pdf.7.0.0.nupkg
+nuget.exe push -Source "nuvtools" -ApiKey az NuvTools.Report.Sheet.7.0.0.nupkg
