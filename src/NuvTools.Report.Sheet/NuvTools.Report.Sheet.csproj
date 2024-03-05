@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6;net7</TargetFrameworks>
+		<TargetFrameworks>net6;net7;net8</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>Nuv Tools</Authors>
-		<Copyright>Copyright © 2023 Nuv Tools</Copyright>
+		<Copyright>Copyright © 2024 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuv.tools</PackageProjectUrl>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>NuvTools.Report.Sheet.snk</AssemblyOriginatorKeyFile>
 		<Description>Helper report library to work with Excel/CSV.</Description>
-		<Version>7.1.0</Version>
+		<Version>8.0.3</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
@@ -42,7 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ClosedXML" Version="0.102.1" />
+		<PackageReference Include="ClosedXML" Version="0.102.2" />
 	</ItemGroup>
 
 	<ItemGroup>
