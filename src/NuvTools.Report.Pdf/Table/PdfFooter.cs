@@ -3,14 +3,9 @@ using QuestPDF.Infrastructure;
 
 namespace NuvTools.Report.Pdf.Table;
 
-internal class PdfFooter : IComponent
+internal class PdfFooter(Report.Table.Models.Table model) : IComponent
 {
-    private NuvTools.Report.Table.Models.Table Model { get; set; }
-
-    public PdfFooter(NuvTools.Report.Table.Models.Table model)
-    {
-        Model = model;
-    }
+    private Report.Table.Models.Table Model { get; set; } = model;
 
     public void Compose(IContainer container)
     {

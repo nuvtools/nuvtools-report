@@ -4,16 +4,15 @@ namespace NuvTools.Report.Table.Models;
 
 public class Table
 {
-    public Info Info { get; set; }
-    public Style Style { get; set; }
-    public Body Content { get; set; }
+    public required Info Info { get; set; }
+    public Style? Style { get; set; }
+    public required Body Content { get; set; }
 
     public void SetRows<T>(List<Column> columns, List<T> objList)
     {
-        if (Content == null)
-            Content = new();
+        Content ??= new();
 
-        if (Content.Header == null)
+        if (Content.Header is null)
             Content.Header = new();
 
         Content.Header.Columns = columns;
@@ -22,14 +21,14 @@ public class Table
 
         foreach (var obj in objList)
         {
-            var row = new Row { Cells = new List<Cell>() };
+            var row = new Row { Cells = [] };
 
             foreach (var column in columns)
             {
                 var value = GetPropertyValue(obj, column.Name);
                 row.Cells.Add(new Cell
                 {
-                    Value = value != null ? value.ToString() : string.Empty,
+                    Value = value is null ? string.Empty : value.ToString()!,
                     Column = column
                 });
             }
@@ -40,8 +39,9 @@ public class Table
         Content.Rows = rows;
     }
 
-    private static object GetPropertyValue<T>(T obj, string propName)
+    private static object? GetPropertyValue<T>(T obj, string propName)
     {
-        return obj.GetType().GetProperty(propName).GetValue(obj);
+        ArgumentNullException.ThrowIfNull(obj, propName);
+        return obj.GetType().GetProperty(propName)?.GetValue(obj);
     }
 }
