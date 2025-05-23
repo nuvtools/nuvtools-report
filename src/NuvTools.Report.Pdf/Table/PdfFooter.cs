@@ -9,23 +9,16 @@ internal class PdfFooter(Report.Table.Models.Table model) : IComponent
 
     public void Compose(IContainer container)
     {
-        container.PaddingBottom(10)
-
-
-            .Grid(grid =>
+        container
+            .PaddingBottom(10)
+            .PaddingHorizontal(22)
+            .Row(row =>
             {
-                grid.AlignCenter();
-
-                grid.Item(10)
-                    .PaddingLeft(22)
-                    .Text($"{Model.Info.IssueUser.ToUpper()} - {DateTime.Now}")
+                row.RelativeItem().AlignMiddle().Text($"{Model.Info.IssueUser.ToUpper()} - {DateTime.Now}")
                     .FontSize(9)
                     .FontColor("#AAAAAA");
 
-                grid.Item(2)
-                .AlignRight()
-                .PaddingRight(22)
-                .Text(text =>
+                row.ConstantItem(100).AlignRight().AlignMiddle().Text(text =>
                 {
                     text.DefaultTextStyle(TextStyle.Default.FontSize(10).FontColor("#AAAAAA"));
                     text.CurrentPageNumber();

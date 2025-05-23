@@ -91,7 +91,7 @@ public static class ExcelExtension
 
     private static void AddWorksheetText(this IXLWorksheet xlWorksheet, int xlRowNumber, string text, Style style)
     {
-        var cell = new List<Cell> { new Cell { Column = new Column { Order = 1 }, Value = text } };
+        var cell = new List<Cell> { new() { Column = new Column { Order = 1 }, Value = text } };
         xlWorksheet.AddValuesRow(xlRowNumber, cell, style);
     }
 

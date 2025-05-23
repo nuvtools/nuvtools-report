@@ -4,12 +4,12 @@
 		<TargetFrameworks>net8;net9</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>Nuv Tools</Authors>
-		<Copyright>Copyright © 2024 Nuv Tools</Copyright>
+		<Copyright>Copyright © 2025 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>NuvTools.Report.Pdf.snk</AssemblyOriginatorKeyFile>
 		<Description>Helper report library to work with PDF.</Description>
-		<Version>9.0.0</Version>
+		<Version>9.1.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
@@ -43,8 +43,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="itext7" Version="8.0.5" />
-		<PackageReference Include="QuestPDF" Version="2024.10.3" />
+		<PackageReference Include="itext7" Version="9.2.0" />
+		<PackageReference Include="QuestPDF" Version="2025.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
