@@ -9,7 +9,7 @@
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>NuvTools.Report.snk</AssemblyOriginatorKeyFile>
 		<Description>Report base library to support PDF and Sheet infrastructure libraries.</Description>
-		<Version>9.1.0</Version>
+		<Version>9.1.1</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
