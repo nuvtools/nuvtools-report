@@ -4,13 +4,20 @@ using NuvTools.Report.Table.Models.Components;
 
 namespace NuvTools.Report.Sheet.Extensions;
 
+/// <summary>
+/// Provides extension methods for exporting documents to Excel format.
+/// </summary>
 public static class ExcelExtension
 {
     /// <summary>
-    /// Export document to Excel format.
+    /// Exports a document to Excel (.xlsx) format encoded as a base64 string.
     /// </summary>
-    /// <param name="document">Document data.</param>
-    /// <returns>Excel (.xlsx) file in base 64 string.</returns>
+    /// <param name="document">The document containing tables to export.</param>
+    /// <returns>A base64-encoded string representing the Excel (.xlsx) file.</returns>
+    /// <remarks>
+    /// Each table in the document becomes a separate worksheet in the Excel file.
+    /// The export includes full headers with company information, titles, and filters.
+    /// </remarks>
     public static string ExportToExcel(this Document document)
     {
         var xlWbook = document.BuildWorkbook(true);
@@ -22,6 +29,12 @@ public static class ExcelExtension
         return Convert.ToBase64String(ms.ToArray());
     }
 
+    /// <summary>
+    /// Builds an Excel workbook from a document.
+    /// </summary>
+    /// <param name="document">The document to convert.</param>
+    /// <param name="includeHeader">Whether to include report headers with company info and titles.</param>
+    /// <returns>An Excel workbook containing all tables as worksheets.</returns>
     internal static XLWorkbook BuildWorkbook(this Document document, bool includeHeader)
     {
         var xlWbook = new XLWorkbook();
@@ -32,6 +45,16 @@ public static class ExcelExtension
         return xlWbook;
     }
 
+    /// <summary>
+    /// Adds a table as a worksheet to an Excel workbook.
+    /// </summary>
+    /// <param name="xlWbook">The workbook to add the worksheet to.</param>
+    /// <param name="worksheet">The table to add as a worksheet.</param>
+    /// <param name="includeHeader">Whether to include report headers with company info and titles.</param>
+    /// <remarks>
+    /// When includeHeader is true, the worksheet includes title, company info, filter description,
+    /// and issue user/date before the data table. The header uses custom styling from the table's Style property.
+    /// </remarks>
     public static void AddWorksheet(this XLWorkbook xlWbook, Table.Models.Table worksheet, bool includeHeader)
     {
         var rowIndex = 1;
@@ -45,7 +68,7 @@ public static class ExcelExtension
                 {
                     Bold = true,
                     FontSize = 14.0,
-                    BackgroundHeaderColor = worksheet.Style.BackgroundHeaderColor,
+                    BackgroundHeaderColor = worksheet.Style!.BackgroundHeaderColor,
                     FontHeaderColor = worksheet.Style.FontHeaderColor
                 });
 
@@ -79,6 +102,12 @@ public static class ExcelExtension
         }
     }
 
+    /// <summary>
+    /// Adds the column header row to a worksheet.
+    /// </summary>
+    /// <param name="xlWorksheet">The worksheet to add the header to.</param>
+    /// <param name="index">The row index where the header should be placed.</param>
+    /// <param name="worksheet">The table containing column definitions.</param>
     private static void AddContentHeader(this IXLWorksheet xlWorksheet, int index, Table.Models.Table worksheet)
     {
         var style = new Style
@@ -89,12 +118,24 @@ public static class ExcelExtension
         xlWorksheet.AddValuesRow(index, PivotColumnstoCells(worksheet.Content.Header.Columns), style);
     }
 
+    /// <summary>
+    /// Adds a single text row to a worksheet (used for titles and header information).
+    /// </summary>
+    /// <param name="xlWorksheet">The worksheet to add text to.</param>
+    /// <param name="xlRowNumber">The row number where the text should be placed.</param>
+    /// <param name="text">The text content to add.</param>
+    /// <param name="style">The styling to apply to the text.</param>
     private static void AddWorksheetText(this IXLWorksheet xlWorksheet, int xlRowNumber, string text, Style style)
     {
         var cell = new List<Cell> { new() { Column = new Column { Order = 1 }, Value = text } };
         xlWorksheet.AddValuesRow(xlRowNumber, cell, style);
     }
 
+    /// <summary>
+    /// Converts a list of columns to a list of cells for header rendering.
+    /// </summary>
+    /// <param name="columns">The columns to convert.</param>
+    /// <returns>A list of cells containing column labels.</returns>
     private static List<Cell> PivotColumnstoCells(List<Column> columns)
     {
         return columns.Select(a => new Cell
@@ -104,7 +145,18 @@ public static class ExcelExtension
         }).ToList();
     }
 
-    private static void AddValuesRow(this IXLWorksheet xlWorksheet, int xlRowNumber, List<Cell> cells, Style style)
+    /// <summary>
+    /// Adds a row of cell values to a worksheet with optional styling.
+    /// </summary>
+    /// <param name="xlWorksheet">The worksheet to add the row to.</param>
+    /// <param name="xlRowNumber">The row number where values should be placed.</param>
+    /// <param name="cells">The cells to add to the row.</param>
+    /// <param name="style">Optional styling to apply to the cells.</param>
+    /// <remarks>
+    /// Cells are ordered by their Column.Order property. DateTime values are formatted using
+    /// the Column.Format property. When BackgroundHeaderColor is set, the row spans 40 columns.
+    /// </remarks>
+    private static void AddValuesRow(this IXLWorksheet xlWorksheet, int xlRowNumber, List<Cell> cells, Style? style)
     {
         var totalColumns = cells.Max(a => a.Column.Order);
 
@@ -140,7 +192,16 @@ public static class ExcelExtension
         }
     }
 
-    private static void SetCellStyle(this IXLCell cell, Style style)
+    /// <summary>
+    /// Applies styling properties to an Excel cell.
+    /// </summary>
+    /// <param name="cell">The cell to style.</param>
+    /// <param name="style">The style properties to apply.</param>
+    /// <remarks>
+    /// Applies bold, font size, background colors (gray or custom HTML color), and font colors.
+    /// If style is null, no styling is applied. HTML colors should be in format "#RRGGBB".
+    /// </remarks>
+    private static void SetCellStyle(this IXLCell cell, Style? style)
     {
         if (style == null) return;
 

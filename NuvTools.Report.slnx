@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+	<Project Path="src\NuvTools.Report\NuvTools.Report.csproj" />
+	<Project Path="src\NuvTools.Report.Pdf\NuvTools.Report.Pdf.csproj"  />
+	<Project Path="src\NuvTools.Report.Sheet\NuvTools.Report.Sheet.csproj" />
+  </Folder>
+</Solution>

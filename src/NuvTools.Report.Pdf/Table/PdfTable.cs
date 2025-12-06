@@ -4,8 +4,20 @@ using QuestPDF.Infrastructure;
 
 namespace NuvTools.Report.Pdf.Table;
 
+/// <summary>
+/// Renders the table content section of a PDF document, including column headers and data rows.
+/// </summary>
 internal class PdfTable(NuvTools.Report.Table.Models.Table model) : IComponent
 {
+    /// <summary>
+    /// Composes the table structure with column headers and data rows.
+    /// </summary>
+    /// <param name="container">The container to render the table into.</param>
+    /// <remarks>
+    /// The table renders with a header row containing column labels (ordered by Column.Order),
+    /// followed by data rows with light gray borders. DateTime values are formatted using the
+    /// column's Format property if specified.
+    /// </remarks>
     public void Compose(IContainer container)
     {
         container
@@ -19,7 +31,7 @@ internal class PdfTable(NuvTools.Report.Table.Models.Table model) : IComponent
                     .Padding(5)
                     .Row(row =>
                     {
-                        foreach (var item in model.Content.Header.Columns.OrderBy(a => a.Order))
+                        foreach (var item in model.Content.Header!.Columns.OrderBy(a => a.Order))
                         {
                             row.RelativeItem().AlignCenter().Text(item.Label);
                         }

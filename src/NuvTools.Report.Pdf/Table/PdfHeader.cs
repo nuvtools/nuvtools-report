@@ -4,8 +4,21 @@ using QuestPDF.Infrastructure;
 
 namespace NuvTools.Report.Pdf.Table;
 
+/// <summary>
+/// Renders the header section of a PDF page, displaying the report title, filter description, and company information.
+/// </summary>
 internal class PdfHeader(NuvTools.Report.Table.Models.Table model) : IComponent
 {
+    /// <summary>
+    /// Composes the header layout with report title, filter description, and company branding.
+    /// </summary>
+    /// <param name="container">The container to render the header into.</param>
+    /// <remarks>
+    /// The header displays the report title and filter description on the left side in white text.
+    /// On the right side, it shows either the company logo (if provided as base64) with URL,
+    /// or the company abbreviation with a clickable URL hyperlink. The background color is
+    /// determined by the table's Style.BackgroundHeaderColor property.
+    /// </remarks>
     public void Compose(IContainer container)
     {
         container

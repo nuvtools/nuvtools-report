@@ -1,15 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8;net9</TargetFrameworks>
+		<TargetFrameworks>net8;net9;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2025 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>NuvTools.Report.Pdf.snk</AssemblyOriginatorKeyFile>
 		<Description>Helper report library to work with PDF.</Description>
-		<Version>9.1.2</Version>
+		<Version>10.0.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
@@ -43,9 +41,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="itext7" Version="9.3.0" />
-		<PackageReference Include="itext7.bouncy-castle-adapter" Version="9.3.0" />
-		<PackageReference Include="QuestPDF" Version="2025.7.2" />
+		<PackageReference Include="PDFsharp" Version="6.2.3" />
+		<PackageReference Include="QuestPDF" Version="2025.7.4" />
 	</ItemGroup>
 
 	<ItemGroup>
