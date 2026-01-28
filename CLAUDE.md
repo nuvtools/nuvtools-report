@@ -4,41 +4,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NuvTools.Report is a .NET library suite for generating reports in multiple formats (PDF, Excel, CSV). The solution consists of three NuGet packages:
+NuvTools.Report is a .NET library suite for generating reports in multiple formats (PDF, Excel, CSV). The solution consists of three NuGet packages targeting .NET 8, .NET 9, and .NET 10:
 
-- **NuvTools.Report**: Core library providing the base table model infrastructure
-- **NuvTools.Report.Pdf**: PDF generation using QuestPDF and PDFsharp
-- **NuvTools.Report.Sheet**: Excel/CSV generation using ClosedXML
+- **src/NuvTools.Report** - Core report model infrastructure with document-table hierarchy and reflection-based data binding
+- **src/NuvTools.Report.Pdf** - PDF generation using QuestPDF and PDFsharp
+- **src/NuvTools.Report.Sheet** - Excel/CSV generation using ClosedXML
 
-## Build Commands
+All libraries are published as NuGet packages. No test projects exist in the solution.
 
+## Build and Test Commands
+
+**Note:** This solution uses the modern `.slnx` (XML-based solution) format introduced in Visual Studio 2022 v17.11.
+
+### Build the solution
 ```bash
-# Build entire solution
 dotnet build NuvTools.Report.slnx
-
-# Build specific project
-dotnet build src/NuvTools.Report/NuvTools.Report.csproj
-dotnet build src/NuvTools.Report.Pdf/NuvTools.Report.Pdf.csproj
-dotnet build src/NuvTools.Report.Sheet/NuvTools.Report.Sheet.csproj
-
-# Build in Release mode (generates NuGet packages)
-dotnet build NuvTools.Report.slnx -c Release
-
-# Clean build artifacts
-dotnet clean NuvTools.Report.slnx
 ```
 
-## Target Frameworks
+### Build for specific configuration
+```bash
+dotnet build NuvTools.Report.slnx --configuration Release
+```
 
-All projects multi-target: `net8`, `net9`, `net10.0`
-
-Projects have:
-- `Nullable` reference types enabled
-- `ImplicitUsings` enabled
-- XML documentation generation enabled
-- Code style enforcement enabled
-
-## Architecture
+## Architecture and Key Components
 
 ### Core Model Pattern
 
@@ -56,57 +44,76 @@ Document
             └── Cells (List<Cell>)
 ```
 
-Key model classes in `NuvTools.Report/Table/Models/`:
-- `Document.cs`: Top-level container with background color and table list
-- `Table.cs`: Individual table with Info, Style, and Content (Body)
-- `Info.cs`: Metadata (Order, Name, Title, Company, Logo, Filter, Issue info)
-- `Style.cs`: Formatting properties
-- `Components/Column.cs`: Column definition (Name, Label, Order, Format)
-- `Components/Row.cs`: Row containing Cells
-- `Components/Cell.cs`: Individual cell with Value and Column reference
-- `Components/Body.cs`: Container for Header and Rows
-- `Components/Header.cs`: Container for Columns
+### NuvTools.Report Library
 
-### Extension Pattern
+Core model classes in `Table/Models/`:
 
-Both PDF and Sheet libraries use extension methods on `Document`:
+- `Document` - Top-level container with `BackgroundDocumentHeaderColor` and `Tables` list
+- `Table` - Individual table with `Info`, `Style`, and `Content` (Body). Contains `SetRows<T>()` for reflection-based data population
+- `Info` - Metadata (Order, Name, Title, CompanyAbbreviation, CompanyUrl, LogoImage, FilterDescription, IssueDate, IssueUser)
+- `Style` - Formatting (Bold, FontSize, BackgroundLineGray, BackgroundHeaderColor, FontHeaderColor)
 
-**PDF Extensions** (`NuvTools.Report.Pdf/Table/PdfExtension.cs`):
-- `ExportSheetToPdf()`: Returns List<string> of base64 PDFs (one per table)
-- `ExportFirstSheetToPdf()`: Returns single base64 PDF string
-- Uses `PdfSheet` class internally with QuestPDF
+Component classes in `Table/Models/Components/`:
 
-**Sheet Extensions** (`NuvTools.Report.Sheet/Extensions/`):
-- `ExcelExtension.ExportToExcel()`: Returns base64 Excel file
-- `CsvExtensions.ExportToCsv()`: Returns base64 CSV file
-- Uses ClosedXML for Excel generation
+- `Body` - Container for Header and Rows
+- `Header` - Container for Columns
+- `Column` - Column definition (Name for reflection, Label, Order, Format)
+- `Row` - Data row with Order and Cells list
+- `Cell` - Individual cell with Column reference and Value string
+
+### NuvTools.Report.Pdf Library
+
+PDF generation classes in `Table/`:
+
+- `PdfExtension` (static) - Extension methods on `Document`:
+  - `ExportSheetToPdf()` - All tables as separate base64 PDF strings
+  - `ExportFirstSheetToPdf()` - First table as base64 PDF string
+- `PdfSheet` (internal) - QuestPDF `IDocument` implementation with page layout (header/content/footer)
+- `PdfTable` (internal) - QuestPDF `IComponent` for table content rendering
+- `PdfHeader` (internal) - Header with title, filter description, logo/company info
+- `PdfFooter` (internal) - Footer with issue user, date, and page numbers
+
+Utility class in `Util/`:
+
+- `PdfUtil` (static) - `Merge(IEnumerable<byte[]>)` for merging multiple PDFs using PDFsharp
+
+### NuvTools.Report.Sheet Library
+
+Extension classes in `Extensions/`:
+
+- `ExcelExtension` (static) - `ExportToExcel()` returns base64 Excel workbook with styled headers, column definitions, and data rows
+- `CsvExtensions` (static) - `ExportToCsv()` / `ExportFirstSheetToCsv()` returns base64 CSV with semicolon delimiter
 
 ### Data Population
 
-The `Table.SetRows<T>()` method uses reflection to populate table content from object lists:
-1. Converts Column list to header
+`Table.SetRows<T>()` uses reflection to populate table content:
+1. Converts Column list to Header
 2. Iterates through object list
-3. Uses reflection (`GetPropertyValue`) to extract property values matching Column.Name
+3. Uses `GetPropertyValue<T>()` to extract property values matching `Column.Name`
 4. Creates Cell for each Column/property pair
 5. Builds Row list from Cells
 
-## Key Dependencies
+### Output Format
 
-- **NuvTools.Report.Pdf**: QuestPDF 2025.7.4, PDFsharp 6.2.3
-- **NuvTools.Report.Sheet**: ClosedXML 0.105.0
+All export methods return **base64-encoded strings** for easy API transmission.
 
-## Package Information
+## Dependencies
 
-All projects:
-- Generate packages on build (`GeneratePackageOnBuild`)
-- Version: 10.0.0
-- License: Requires acceptance (LICENSE file in repo root)
-- Icon: `icon.png` in repo root
-- Repository: https://github.com/nuvtools/nuvtools-report
+### NuvTools.Report
+- No external package dependencies
 
-## Important Notes
+### NuvTools.Report.Pdf
+- QuestPDF [2025.12.3,2026.1.0)
+- PDFsharp [6.2.4,6.3.0)
+- NuvTools.Report (project reference)
 
-- No test projects currently exist in the solution (tests folder is defined but empty)
-- All projects use the same LICENSE, README.md, and icon.png from repository root
-- Strong name signing (.snk files) was recently removed from all projects
-- The solution supports both Debug and Release configurations
+### NuvTools.Report.Sheet
+- ClosedXML [0.105.0,0.106.0)
+- NuvTools.Report (project reference)
+
+## Code Style and Conventions
+
+- **Nullable reference types** are enabled (`<Nullable>enable</Nullable>`)
+- **Implicit usings** are enabled (`<ImplicitUsings>enable</ImplicitUsings>`)
+- **Code style enforcement** is enabled during build (`<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>`)
+- **XML documentation generation** is required (`<GenerateDocumentationFile>True</GenerateDocumentationFile>`)

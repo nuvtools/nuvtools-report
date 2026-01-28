@@ -1,36 +1,19 @@
 # NuvTools.Report
 
-A comprehensive .NET library suite for generating professional reports in multiple formats including PDF, Excel, and CSV. Build structured table-based reports with rich styling, company branding, and flexible data binding using reflection.
+[![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.svg)](https://www.nuget.org/packages/NuvTools.Report/)
+[![License](https://img.shields.io/github/license/nuvtools/nuvtools-report.svg)](LICENSE)
 
-## 📦 Packages
+A .NET library suite for generating reports in PDF, Excel, and CSV formats. Build structured table-based reports with styling, company branding, and reflection-based data binding. Targets .NET 8, .NET 9, and .NET 10.
 
-| Package | Description | NuGet |
+## Libraries
+
+| Library | Description | NuGet |
 |---------|-------------|-------|
-| **NuvTools.Report** | Core library providing the base table model infrastructure | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.svg)](https://www.nuget.org/packages/NuvTools.Report/) |
+| **NuvTools.Report** | Core report model infrastructure with document-table hierarchy | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.svg)](https://www.nuget.org/packages/NuvTools.Report/) |
 | **NuvTools.Report.Pdf** | PDF generation using QuestPDF and PDFsharp | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.Pdf.svg)](https://www.nuget.org/packages/NuvTools.Report.Pdf/) |
 | **NuvTools.Report.Sheet** | Excel and CSV generation using ClosedXML | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.Sheet.svg)](https://www.nuget.org/packages/NuvTools.Report.Sheet/) |
 
-## ✨ Features
-
-- **Multiple Export Formats**: Generate reports as PDF (landscape A4), Excel (.xlsx), or CSV
-- **Automatic Data Binding**: Use reflection to populate tables from object collections
-- **Rich Styling**: Customize colors, fonts, and formatting
-- **Company Branding**: Include company logos, names, and URLs in report headers
-- **Metadata Support**: Add titles, filter descriptions, issue dates, and user information
-- **Base64 Output**: All exports return base64-encoded strings for easy API transmission
-- **Multi-Table Documents**: Support for multiple tables in a single document
-- **DateTime Formatting**: Automatic formatting of date values using custom format strings
-- **PDF Merging**: Utility to merge multiple PDFs into one document
-
-## 🎯 Target Frameworks
-
-- .NET 8.0
-- .NET 9.0
-- .NET 10.0
-
-## 🚀 Installation
-
-Install the packages via NuGet Package Manager:
+## Installation
 
 ```bash
 # For PDF export
@@ -43,21 +26,42 @@ dotnet add package NuvTools.Report.Sheet
 dotnet add package NuvTools.Report
 ```
 
-## 📖 Usage
+## Features
 
-### Basic Example - PDF Export
+- Multiple export formats: PDF (landscape A4), Excel (.xlsx), CSV
+- Automatic data binding from object collections via reflection
+- Customizable colors, fonts, and formatting
+- Company branding with logos, names, and URLs in headers
+- Metadata support: titles, filter descriptions, issue dates, user info
+- Base64-encoded output for API transmission
+- Multi-table documents with separate worksheets/pages
+- DateTime formatting with custom format strings
+- PDF merging utility
+
+## Architecture
+
+The library uses a document-table-component hierarchy:
+
+```
+Document
+└── Tables (List<Table>)
+    ├── Info (metadata: name, title, company info, issue date/user)
+    ├── Style (formatting: colors, fonts)
+    └── Content (Body)
+        ├── Header
+        │   └── Columns (List<Column>)
+        └── Rows (List<Row>)
+            └── Cells (List<Cell>)
+```
+
+## Usage
+
+### PDF Export
 
 ```csharp
 using NuvTools.Report.Table.Models;
 using NuvTools.Report.Table.Models.Components;
 using NuvTools.Report.Pdf.Table;
-
-// Define your data model
-var products = new List<Product>
-{
-    new Product { Id = 1, Name = "Product A", Price = 29.99m, Date = DateTime.Now },
-    new Product { Id = 2, Name = "Product B", Price = 49.99m, Date = DateTime.Now }
-};
 
 // Define columns
 var columns = new List<Column>
@@ -89,20 +93,17 @@ var table = new Table
     Content = new Body()
 };
 
-// Populate rows using reflection
+// Populate rows from objects using reflection
 table.SetRows(columns, products);
 
-// Create document
+// Create document and export
 var document = new Document
 {
     BackgroundDocumentHeaderColor = "#003366",
     Tables = [table]
 };
 
-// Export to PDF (returns base64 string)
 string pdfBase64 = document.ExportFirstSheetToPdf();
-
-// Or export all tables
 List<string> allPdfs = document.ExportSheetToPdf();
 ```
 
@@ -111,10 +112,8 @@ List<string> allPdfs = document.ExportSheetToPdf();
 ```csharp
 using NuvTools.Report.Sheet.Extensions;
 
-// Using the same document structure from above
 string excelBase64 = document.ExportToExcel();
 
-// Save to file
 byte[] excelBytes = Convert.FromBase64String(excelBase64);
 File.WriteAllBytes("report.xlsx", excelBytes);
 ```
@@ -124,10 +123,7 @@ File.WriteAllBytes("report.xlsx", excelBytes);
 ```csharp
 using NuvTools.Report.Sheet.Extensions;
 
-// Export all tables to CSV
 List<string> csvFiles = document.ExportToCsv();
-
-// Or export first table only
 string csvBase64 = document.ExportFirstSheetToCsv();
 ```
 
@@ -136,60 +132,45 @@ string csvBase64 = document.ExportFirstSheetToCsv();
 ```csharp
 using NuvTools.Report.Pdf.Util;
 
-var pdf1 = Convert.FromBase64String(pdfBase64String1);
-var pdf2 = Convert.FromBase64String(pdfBase64String2);
-
-byte[] mergedPdf = PdfUtil.Merge([pdf1, pdf2]);
+byte[] mergedPdf = PdfUtil.Merge([pdf1Bytes, pdf2Bytes]);
 ```
 
-## 🏗️ Architecture
-
-The library uses a hierarchical document-table-component structure:
-
-```
-Document
-└── Tables (List<Table>)
-    ├── Info (metadata: name, title, company info, issue date/user)
-    ├── Style (formatting: colors, fonts)
-    └── Content (Body)
-        ├── Header
-        │   └── Columns (List<Column>)
-        └── Rows (List<Row>)
-            └── Cells (List<Cell>)
-```
-
-### Key Components
-
-- **Document**: Top-level container with background color and table list
-- **Table**: Individual table with Info, Style, and Content
-- **Column**: Column definition with property name (for reflection), label, order, and format
-- **Row/Cell**: Data rows containing cells with values
-- **Info**: Metadata including title, company details, filter description, issue info
-- **Style**: Formatting properties (colors, fonts, etc.)
-
-## 🔧 Dependencies
+## Dependencies
 
 ### NuvTools.Report.Pdf
-- QuestPDF (2025.7.4)
-- PDFsharp (6.2.3)
+- QuestPDF [2025.12.3,2026.1.0)
+- PDFsharp [6.2.4,6.3.0)
 
 ### NuvTools.Report.Sheet
-- ClosedXML (0.105.0)
+- ClosedXML [0.105.0,0.106.0)
 
-## 📝 License
+## Building
+
+This solution uses the `.slnx` (XML-based solution) format.
+
+```bash
+dotnet build NuvTools.Report.slnx
+dotnet build NuvTools.Report.slnx -c Release
+```
+
+## Project Structure
+
+```
+nuvtools-report/
+├── src/
+│   ├── NuvTools.Report/
+│   ├── NuvTools.Report.Pdf/
+│   └── NuvTools.Report.Sheet/
+├── NuvTools.Report.slnx
+└── README.md
+```
+
+## License
 
 This project requires license acceptance. See the [LICENSE](LICENSE) file for details.
 
-## 🌐 Links
+## Links
 
-- **Website**: [https://nuvtools.com](https://nuvtools.com)
-- **Repository**: [https://github.com/nuvtools/nuvtools-report](https://github.com/nuvtools/nuvtools-report)
-- **NuGet Packages**: Search for "NuvTools.Report" on [nuget.org](https://www.nuget.org/)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
-
----
-
-Copyright © 2025 Nuv Tools
+- [Website](https://nuvtools.com)
+- [GitHub Repository](https://github.com/nuvtools/nuvtools-report)
+- [NuGet Packages](https://www.nuget.org/profiles/NuvTools)
