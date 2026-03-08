@@ -7,7 +7,7 @@
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<Description>PDF report generation with table rendering, company branding, and document merging using QuestPDF and PDFsharp.</Description>
-		<Version>10.1.0</Version>
+		<Version>10.2.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
@@ -41,7 +41,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="PDFsharp" Version="[6.2.4,6.3.0)" />
-		<PackageReference Include="QuestPDF" Version="[2025.12.3,2026.1.0)" />
+		<PackageReference Include="QuestPDF" Version="2026.2.3" />
 	</ItemGroup>
 
 	<ItemGroup>

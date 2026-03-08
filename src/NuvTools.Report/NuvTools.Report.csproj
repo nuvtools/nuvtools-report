@@ -7,7 +7,7 @@
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<Description>Core report model infrastructure with document-table hierarchy and reflection-based data binding for PDF and spreadsheet generation.</Description>
-		<Version>10.1.0</Version>
+		<Version>10.2.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>

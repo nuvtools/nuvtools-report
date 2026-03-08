@@ -6,8 +6,8 @@
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
-		<Description>Excel and CSV report generation with multi-sheet workbooks, styled formatting, and base64 output using ClosedXML.</Description>
-		<Version>10.1.0</Version>
+		<Description>Excel and CSV report generation with multi-sheet workbooks, styled formatting, base64 output using ClosedXML, and CSV reading/importing with attribute-based field mapping.</Description>
+		<Version>10.2.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
@@ -17,7 +17,7 @@
 		<RepositoryType>git</RepositoryType>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>NuvTools Report Excel CSV ClosedXML Sheet</PackageTags>
+		<PackageTags>NuvTools Report Excel CSV ClosedXML Sheet Import Reader Parser</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>

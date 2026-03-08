@@ -123,8 +123,16 @@ File.WriteAllBytes("report.xlsx", excelBytes);
 ```csharp
 using NuvTools.Report.Sheet.Extensions;
 
+// Default delimiter is comma (,) per RFC 4180
 List<string> csvFiles = document.ExportToCsv();
 string csvBase64 = document.ExportFirstSheetToCsv();
+
+// Use a different delimiter
+string csvSemicolon = document.ExportFirstSheetToCsv(CsvDelimiter.Semicolon);
+string csvTab = document.ExportFirstSheetToCsv(CsvDelimiter.Tab);
+
+// Use a custom delimiter
+string csvPipe = document.ExportFirstSheetToCsv(CsvDelimiter.Custom, customDelimiter: "|");
 ```
 
 ### PDF Merging
