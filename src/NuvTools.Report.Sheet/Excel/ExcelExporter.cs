@@ -39,7 +39,7 @@ public class ExcelExporter : IExcelExporter
 
         if (includeHeader)
         {
-            AddWorksheetText(xlWorksheet, rowIndex, worksheet.Info.Title,
+            AddWorksheetText(xlWorksheet, rowIndex, worksheet.Info.Title ?? string.Empty,
                 new Style
                 {
                     Bold = true,
@@ -59,7 +59,7 @@ public class ExcelExporter : IExcelExporter
 
             rowIndex++; ;
 
-            AddWorksheetText(xlWorksheet, ++rowIndex, worksheet.Info.FilterDescription, new Style { FontSize = 10 });
+            AddWorksheetText(xlWorksheet, ++rowIndex, worksheet.Info.FilterDescription ?? string.Empty, new Style { FontSize = 10 });
             AddWorksheetText(xlWorksheet, ++rowIndex,
                 $"{worksheet.Info.IssueUser} - {worksheet.Info.IssueDate}",
                 new Style { FontSize = 10 });
@@ -85,7 +85,7 @@ public class ExcelExporter : IExcelExporter
             BackgroundLineGray = true
         };
 
-        AddValuesRow(xlWorksheet, index, PivotColumnsToCells(worksheet.Content.Header.Columns), style);
+        AddValuesRow(xlWorksheet, index, PivotColumnsToCells(worksheet.Content.Header?.Columns ?? []), style);
     }
 
     private static void AddWorksheetText(IXLWorksheet xlWorksheet, int xlRowNumber, string text, Style style)

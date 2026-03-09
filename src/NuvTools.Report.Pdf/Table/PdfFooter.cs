@@ -28,7 +28,7 @@ internal class PdfFooter(Report.Table.Models.Table model) : IComponent
             .PaddingHorizontal(22)
             .Row(row =>
             {
-                row.RelativeItem().AlignMiddle().Text($"{Model.Info.IssueUser.ToUpper()} - {DateTime.Now}")
+                row.RelativeItem().AlignMiddle().Text($"{Model.Info.IssueUser?.ToUpper()} - {DateTime.Now}")
                     .FontSize(9)
                     .FontColor("#AAAAAA");
 

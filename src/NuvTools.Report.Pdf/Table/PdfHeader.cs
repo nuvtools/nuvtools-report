@@ -30,11 +30,11 @@ internal class PdfHeader(NuvTools.Report.Table.Models.Table model) : IComponent
                 row.RelativeItem(10).Column(column =>
                 {
                     column.Item().PaddingTop(9)
-                        .Text(model.Info.Title.ToUpper())
+                        .Text(model.Info.Title?.ToUpper() ?? string.Empty)
                         .FontSize(18).Bold().FontColor(Colors.White);
 
                     column.Item().PaddingTop(-5)
-                        .Text(model.Info.FilterDescription.ToUpper())
+                        .Text(model.Info.FilterDescription?.ToUpper() ?? string.Empty)
                         .FontSize(10).Bold().FontColor(Colors.White);
                 });
 
@@ -46,19 +46,19 @@ internal class PdfHeader(NuvTools.Report.Table.Models.Table model) : IComponent
 
                         column.Item()
                             .PaddingTop(2)
-                            .Hyperlink(model.Info.CompanyUrl)
-                            .Text(model.Info.CompanyUrl.ToUpper())
+                            .Hyperlink(model.Info.CompanyUrl ?? string.Empty)
+                            .Text(model.Info.CompanyUrl?.ToUpper() ?? string.Empty)
                             .FontSize(11).Bold().FontColor(Colors.White);
                     }
                     else
                     {
                         column.Item().PaddingTop(10)
-                            .Text(model.Info.CompanyAbbreviation.ToUpper())
+                            .Text(model.Info.CompanyAbbreviation?.ToUpper() ?? string.Empty)
                             .FontSize(17).Bold().FontColor(Colors.White);
 
                         column.Item().PaddingTop(-4)
-                            .Hyperlink(model.Info.CompanyUrl)
-                            .Text(model.Info.CompanyUrl.ToLower())
+                            .Hyperlink(model.Info.CompanyUrl ?? string.Empty)
+                            .Text(model.Info.CompanyUrl?.ToLower() ?? string.Empty)
                             .FontSize(11).Bold().FontColor(Colors.White);
                     }
                 });

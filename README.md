@@ -189,6 +189,7 @@ public class ReportService(ICsvExporter csvExporter)
     public void ExportCsv(Document document)
     {
         // Default delimiter is comma (,) per RFC 4180
+        // Header row (column labels) is included by default
         List<string> csvFiles = csvExporter.ExportToCsv(document);
         string csvBase64 = csvExporter.ExportFirstSheetToCsv(document);
 
@@ -198,6 +199,13 @@ public class ReportService(ICsvExporter csvExporter)
 
         // Use a custom delimiter
         string csvPipe = csvExporter.ExportFirstSheetToCsv(document, CsvDelimiter.Custom, "||");
+
+        // Export without the header row
+        string csvNoHeader = csvExporter.ExportFirstSheetToCsv(document, includeHeader: false);
+
+        // By default, delimiter occurrences in values/headers are removed to prevent CSV corruption
+        // Disable sanitization if you want to keep raw values
+        string csvRaw = csvExporter.ExportFirstSheetToCsv(document, sanitizeDelimiter: false);
     }
 }
 ```

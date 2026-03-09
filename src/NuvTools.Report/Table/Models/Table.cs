@@ -49,7 +49,7 @@ public class Table
 
             foreach (var column in columns)
             {
-                var value = GetPropertyValue(obj, column.Name);
+                var value = column.Name is not null ? GetPropertyValue(obj, column.Name) : null;
                 row.Cells.Add(new Cell
                 {
                     Value = value is null ? string.Empty : value.ToString()!,

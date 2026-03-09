@@ -156,6 +156,70 @@ public class CsvExporterTests
         Assert.That(lines[0], Is.EqualTo("First,Second"));
     }
 
+    [Test]
+    public void ExportFirstSheetToCsv_SanitizeDelimiter_RemovesDelimiterFromValues()
+    {
+        var document = CreateDocument(
+        [
+            CreateTable("Sheet1", [["Hello,World", "Good,Bye"]])
+        ]);
+
+        var base64 = _exporter.ExportFirstSheetToCsv(document);
+        var lines = DecodeBase64ToLines(base64);
+
+        Assert.That(lines[0], Is.EqualTo("HelloWorld,GoodBye"));
+    }
+
+    [Test]
+    public void ExportFirstSheetToCsv_SanitizeDelimiterDisabled_KeepsDelimiterInValues()
+    {
+        var document = CreateDocument(
+        [
+            CreateTable("Sheet1", [["A;B", "C;D"]])
+        ]);
+
+        var base64 = _exporter.ExportFirstSheetToCsv(document, CsvDelimiter.Semicolon, sanitizeDelimiter: false);
+        var lines = DecodeBase64ToLines(base64);
+
+        Assert.That(lines[0], Is.EqualTo("A;B;C;D"));
+    }
+
+    [Test]
+    public void ExportFirstSheetToCsv_SanitizeDelimiter_RemovesDelimiterFromHeaderLabels()
+    {
+        var col1 = new Column { Order = 1, Label = "Col,1" };
+        var col2 = new Column { Order = 2, Label = "Col,2" };
+
+        var table = new Table.Models.Table
+        {
+            Info = new Info { Name = "Sheet1", Order = 1 },
+            Content = new Body
+            {
+                Header = new Header { Columns = [col1, col2] },
+                Rows =
+                [
+                    new Row
+                    {
+                        Order = 1,
+                        Cells =
+                        [
+                            new Cell { Column = col1, Value = "A" },
+                            new Cell { Column = col2, Value = "B" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        var document = new Document { Tables = [table] };
+
+        var base64 = _exporter.ExportFirstSheetToCsv(document, includeHeader: true);
+        var lines = DecodeBase64ToLines(base64);
+
+        Assert.That(lines[0], Is.EqualTo("Col1,Col2"));
+        Assert.That(lines[1], Is.EqualTo("A,B"));
+    }
+
     private static Document CreateDocument(List<Table.Models.Table> tables)
     {
         return new Document { Tables = tables };
