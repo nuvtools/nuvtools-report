@@ -5,6 +5,7 @@
 	<Project Path="src\NuvTools.Report.Sheet\NuvTools.Report.Sheet.csproj" />
   </Folder>
   <Folder Name="/tests/">
+	<Project Path="tests\NuvTools.Report.Pdf.Tests\NuvTools.Report.Pdf.Tests.csproj" />
 	<Project Path="tests\NuvTools.Report.Sheet.Tests\NuvTools.Report.Sheet.Tests.csproj" />
   </Folder>
 </Solution>
