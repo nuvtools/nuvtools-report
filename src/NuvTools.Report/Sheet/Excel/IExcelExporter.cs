@@ -1,6 +1,6 @@
 using NuvTools.Report.Table.Models;
 
-namespace NuvTools.Report.Excel;
+namespace NuvTools.Report.Sheet.Excel;
 
 /// <summary>
 /// Exports documents to Excel (.xlsx) format encoded as base64 strings.

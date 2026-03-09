@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Parsing;
+namespace NuvTools.Report.Sheet.Parsing;
 
 /// <summary>
 /// Specifies how whitespace should be trimmed from field values.

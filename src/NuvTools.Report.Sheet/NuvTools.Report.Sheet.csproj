@@ -6,7 +6,7 @@
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
-		<Description>Excel and CSV report generation with multi-sheet workbooks, styled formatting, base64 output using ClosedXML, and CSV reading/importing with attribute-based field mapping.</Description>
+		<Description>Implementation of NuvTools.Report.Sheet abstractions: Excel export with multi-sheet workbooks and styled formatting using ClosedXML, CSV export and reading with RFC 4180 support, and fixed-length (positional) file reading. All output encoded as base64 for easy API transmission.</Description>
 		<Version>10.2.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
@@ -17,7 +17,7 @@
 		<RepositoryType>git</RepositoryType>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>NuvTools Report Excel CSV ClosedXML Sheet Import Reader Parser</PackageTags>
+		<PackageTags>NuvTools Report Excel CSV ClosedXML Sheet Import Reader Parser FixedLength Positional</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>

@@ -6,7 +6,7 @@
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
-		<Description>Core report model infrastructure with document-table hierarchy and reflection-based data binding for PDF and spreadsheet generation.</Description>
+		<Description>Core report model infrastructure with document-table hierarchy, reflection-based data binding, PDF abstractions (IPdfExporter, IPdfMerger), and Sheet abstractions for CSV/Excel/fixed-length file reading and exporting (ICsvReader, ICsvExporter, IExcelExporter, IFixedLengthReader) with attribute-based field mapping and custom converters.</Description>
 		<Version>10.2.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
@@ -17,7 +17,7 @@
 		<RepositoryType>git</RepositoryType>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>NuvTools Report Table Document Model</PackageTags>
+		<PackageTags>NuvTools Report Table Document Model CSV Excel FixedLength Parsing PDF Abstractions</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>

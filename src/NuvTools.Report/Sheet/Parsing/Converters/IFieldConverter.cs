@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Parsing.Converters;
+namespace NuvTools.Report.Sheet.Parsing.Converters;
 
 /// <summary>
 /// Defines a converter that transforms a raw string value into a typed object.

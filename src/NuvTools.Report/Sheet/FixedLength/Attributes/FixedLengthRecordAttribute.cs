@@ -1,4 +1,4 @@
-namespace NuvTools.Report.FixedLength.Attributes;
+namespace NuvTools.Report.Sheet.FixedLength.Attributes;
 
 /// <summary>
 /// Specifies fixed-length record-level settings.

@@ -1,9 +1,8 @@
 using System.Collections.Concurrent;
 using System.Reflection;
-using NuvTools.Report.FixedLength;
-using NuvTools.Report.FixedLength.Attributes;
-using NuvTools.Report.Parsing;
-using NuvTools.Report.Parsing.Converters;
+using NuvTools.Report.Sheet.FixedLength.Attributes;
+using NuvTools.Report.Sheet.Parsing;
+using NuvTools.Report.Sheet.Parsing.Converters;
 
 namespace NuvTools.Report.Sheet.FixedLength;
 

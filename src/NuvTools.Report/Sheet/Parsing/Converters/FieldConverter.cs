@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Parsing.Converters;
+namespace NuvTools.Report.Sheet.Parsing.Converters;
 
 /// <summary>
 /// Generic abstract base class for type-safe field converters.

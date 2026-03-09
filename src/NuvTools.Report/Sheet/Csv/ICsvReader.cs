@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Csv;
+namespace NuvTools.Report.Sheet.Csv;
 
 /// <summary>
 /// Reads CSV content and maps it to strongly-typed objects using attribute-based field mapping.

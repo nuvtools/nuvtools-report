@@ -1,7 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NuvTools.Report.Csv;
-using NuvTools.Report.Excel;
-using NuvTools.Report.FixedLength;
 using NuvTools.Report.Sheet.Csv;
 using NuvTools.Report.Sheet.Excel;
 using NuvTools.Report.Sheet.FixedLength;
@@ -19,7 +16,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
     /// <returns>The updated <see cref="IServiceCollection"/> instance, enabling method chaining.</returns>
-    public static IServiceCollection AddReportServices(this IServiceCollection services)
+    public static IServiceCollection AddSheetReportServices(this IServiceCollection services)
     {
         services.AddSingleton<ICsvReader, CsvReader>();
         services.AddSingleton<ICsvExporter, CsvExporter>();

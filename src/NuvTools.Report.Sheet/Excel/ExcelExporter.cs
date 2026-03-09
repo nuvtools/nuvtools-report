@@ -1,5 +1,4 @@
 using ClosedXML.Excel;
-using NuvTools.Report.Excel;
 using NuvTools.Report.Table.Models;
 using NuvTools.Report.Table.Models.Components;
 

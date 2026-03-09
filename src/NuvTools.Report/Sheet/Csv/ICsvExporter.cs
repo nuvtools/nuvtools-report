@@ -1,6 +1,6 @@
 using NuvTools.Report.Table.Models;
 
-namespace NuvTools.Report.Csv;
+namespace NuvTools.Report.Sheet.Csv;
 
 /// <summary>
 /// Exports documents to CSV format encoded as base64 strings.
