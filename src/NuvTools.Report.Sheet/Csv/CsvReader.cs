@@ -1,23 +1,23 @@
 using System.Collections.Concurrent;
 using System.Reflection;
-using NuvTools.Report.Sheet.Csv.Attributes;
-using NuvTools.Report.Sheet.Extensions;
-using NuvTools.Report.Sheet.Parsing;
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.Csv;
+using NuvTools.Report.Csv.Attributes;
+using NuvTools.Report.Parsing;
+using NuvTools.Report.Parsing.Converters;
 
 namespace NuvTools.Report.Sheet.Csv;
 
 /// <summary>
 /// Reads CSV content and maps it to strongly-typed objects using attribute-based field mapping.
 /// </summary>
-public static class CsvReader
+public class CsvReader : ICsvReader
 {
     private static readonly ConcurrentDictionary<Type, FieldMapping[]> MetadataCache = new();
 
     /// <summary>
     /// Reads CSV from a string and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadString<T>(string content, CsvReaderOptions? options = null) where T : new()
+    public List<T> ReadString<T>(string content, CsvReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(content);
         return ParseLines<T>(content, options ?? new CsvReaderOptions());
@@ -26,7 +26,7 @@ public static class CsvReader
     /// <summary>
     /// Reads CSV from a base64-encoded string and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadBase64<T>(string base64Content, CsvReaderOptions? options = null) where T : new()
+    public List<T> ReadBase64<T>(string base64Content, CsvReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(base64Content);
         var opts = options ?? new CsvReaderOptions();
@@ -38,7 +38,7 @@ public static class CsvReader
     /// <summary>
     /// Reads CSV from a byte array and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadBytes<T>(byte[] data, CsvReaderOptions? options = null) where T : new()
+    public List<T> ReadBytes<T>(byte[] data, CsvReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(data);
         var opts = options ?? new CsvReaderOptions();
@@ -49,7 +49,7 @@ public static class CsvReader
     /// <summary>
     /// Reads CSV from a stream and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadStream<T>(Stream stream, CsvReaderOptions? options = null) where T : new()
+    public List<T> ReadStream<T>(Stream stream, CsvReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(stream);
         var opts = options ?? new CsvReaderOptions();

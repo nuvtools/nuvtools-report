@@ -1,7 +1,7 @@
-using NuvTools.Report.Sheet.Parsing;
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.Parsing;
+using NuvTools.Report.Parsing.Converters;
 
-namespace NuvTools.Report.Sheet.Csv.Attributes;
+namespace NuvTools.Report.Csv.Attributes;
 
 /// <summary>
 /// Maps a property to a CSV field by position and provides optional conversion settings.

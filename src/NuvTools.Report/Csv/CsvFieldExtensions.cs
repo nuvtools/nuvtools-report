@@ -1,8 +1,7 @@
 using System.Reflection;
-using NuvTools.Report.Sheet.Csv.Attributes;
-using NuvTools.Report.Sheet.Extensions;
+using NuvTools.Report.Csv.Attributes;
 
-namespace NuvTools.Report.Sheet.Csv;
+namespace NuvTools.Report.Csv;
 
 /// <summary>
 /// Utility methods for extracting field metadata from types decorated with <see cref="CsvFieldAttribute"/>.

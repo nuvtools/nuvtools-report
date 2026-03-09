@@ -1,22 +1,23 @@
 using System.Collections.Concurrent;
 using System.Reflection;
-using NuvTools.Report.Sheet.FixedLength.Attributes;
-using NuvTools.Report.Sheet.Parsing;
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.FixedLength;
+using NuvTools.Report.FixedLength.Attributes;
+using NuvTools.Report.Parsing;
+using NuvTools.Report.Parsing.Converters;
 
 namespace NuvTools.Report.Sheet.FixedLength;
 
 /// <summary>
 /// Reads fixed-length (positional) content and maps it to strongly-typed objects using attribute-based field mapping.
 /// </summary>
-public static class FixedLengthReader
+public class FixedLengthReader : IFixedLengthReader
 {
     private static readonly ConcurrentDictionary<Type, FieldMapping[]> MetadataCache = new();
 
     /// <summary>
     /// Reads fixed-length records from a string and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadString<T>(string content, FixedLengthReaderOptions? options = null) where T : new()
+    public List<T> ReadString<T>(string content, FixedLengthReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(content);
         return ParseLines<T>(content, options ?? new FixedLengthReaderOptions());
@@ -25,7 +26,7 @@ public static class FixedLengthReader
     /// <summary>
     /// Reads fixed-length records from a base64-encoded string and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadBase64<T>(string base64, FixedLengthReaderOptions? options = null) where T : new()
+    public List<T> ReadBase64<T>(string base64, FixedLengthReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(base64);
         var opts = options ?? new FixedLengthReaderOptions();
@@ -37,7 +38,7 @@ public static class FixedLengthReader
     /// <summary>
     /// Reads fixed-length records from a byte array and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadBytes<T>(byte[] data, FixedLengthReaderOptions? options = null) where T : new()
+    public List<T> ReadBytes<T>(byte[] data, FixedLengthReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(data);
         var opts = options ?? new FixedLengthReaderOptions();
@@ -48,7 +49,7 @@ public static class FixedLengthReader
     /// <summary>
     /// Reads fixed-length records from a stream and returns a list of mapped objects.
     /// </summary>
-    public static List<T> ReadStream<T>(Stream stream, FixedLengthReaderOptions? options = null) where T : new()
+    public List<T> ReadStream<T>(Stream stream, FixedLengthReaderOptions? options = null) where T : new()
     {
         ArgumentNullException.ThrowIfNull(stream);
         var opts = options ?? new FixedLengthReaderOptions();

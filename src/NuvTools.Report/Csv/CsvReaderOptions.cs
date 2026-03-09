@@ -1,7 +1,6 @@
 using System.Text;
-using NuvTools.Report.Sheet.Extensions;
 
-namespace NuvTools.Report.Sheet.Csv;
+namespace NuvTools.Report.Csv;
 
 /// <summary>
 /// Options that control CSV reading behavior. Values here override attribute-level settings.

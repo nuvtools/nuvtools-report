@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Sheet.Extensions;
+namespace NuvTools.Report.Csv;
 
 /// <summary>
 /// Specifies the delimiter character used when exporting CSV files.

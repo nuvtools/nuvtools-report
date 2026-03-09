@@ -23,6 +23,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="NuvTools.Report.Sheet" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\..\icon.png">
 			<Link>icon.png</Link>
 			<Pack>True</Pack>

@@ -1,6 +1,4 @@
-using NuvTools.Report.Sheet.Extensions;
-
-namespace NuvTools.Report.Sheet.Csv.Attributes;
+namespace NuvTools.Report.Csv.Attributes;
 
 /// <summary>
 /// Specifies CSV record-level settings such as the delimiter character.

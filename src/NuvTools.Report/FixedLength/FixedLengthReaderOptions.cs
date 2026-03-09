@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace NuvTools.Report.Sheet.FixedLength;
+namespace NuvTools.Report.FixedLength;
 
 /// <summary>
 /// Options that control fixed-length record reading behavior.

@@ -1,7 +1,7 @@
-using NuvTools.Report.Sheet.Parsing;
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.Parsing;
+using NuvTools.Report.Parsing.Converters;
 
-namespace NuvTools.Report.Sheet.FixedLength.Attributes;
+namespace NuvTools.Report.FixedLength.Attributes;
 
 /// <summary>
 /// Maps a property to a fixed-length field by sequential position and character width.
