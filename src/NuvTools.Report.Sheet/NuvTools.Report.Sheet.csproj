@@ -7,7 +7,7 @@
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<Description>Implementation of NuvTools.Report.Sheet abstractions: Excel export with multi-sheet workbooks and styled formatting using ClosedXML, CSV export and reading with RFC 4180 support, and fixed-length (positional) file reading. All output encoded as base64 for easy API transmission.</Description>
-		<Version>10.2.1</Version>
+		<Version>10.2.2</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>
@@ -41,7 +41,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="[0.105.0,0.106.0)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
