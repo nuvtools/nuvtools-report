@@ -1,5 +1,5 @@
-using NuvTools.Report.Sheet.Parsing;
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.Parsing;
+using NuvTools.Report.Parsing.Converters;
 
 namespace NuvTools.Report.Sheet.Csv.Attributes;
 

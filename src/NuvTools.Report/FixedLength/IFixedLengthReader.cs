@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Sheet.FixedLength;
+namespace NuvTools.Report.FixedLength;
 
 /// <summary>
 /// Reads fixed-length (positional) content and maps it to strongly-typed objects using attribute-based field mapping.

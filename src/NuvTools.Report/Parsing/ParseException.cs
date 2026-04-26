@@ -1,4 +1,4 @@
-namespace NuvTools.Report.Sheet.Parsing;
+namespace NuvTools.Report.Parsing;
 
 /// <summary>
 /// Exception thrown when a record line or field cannot be parsed.

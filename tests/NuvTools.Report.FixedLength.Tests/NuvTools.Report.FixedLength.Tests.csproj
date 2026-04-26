@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\NuvTools.Report.Pdf\NuvTools.Report.Pdf.csproj" />
+		<ProjectReference Include="..\..\src\NuvTools.Report.FixedLength\NuvTools.Report.FixedLength.csproj" />
 	</ItemGroup>
 
 </Project>

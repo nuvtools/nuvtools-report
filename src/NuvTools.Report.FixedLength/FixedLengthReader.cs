@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Reflection;
-using NuvTools.Report.Sheet.FixedLength.Attributes;
-using NuvTools.Report.Sheet.Parsing;
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.FixedLength.Attributes;
+using NuvTools.Report.Parsing;
+using NuvTools.Report.Parsing.Converters;
 
-namespace NuvTools.Report.Sheet.FixedLength;
+namespace NuvTools.Report.FixedLength;
 
 /// <summary>
 /// Reads fixed-length (positional) content and maps it to strongly-typed objects using attribute-based field mapping.

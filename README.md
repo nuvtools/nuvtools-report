@@ -9,9 +9,10 @@ A .NET library suite for generating reports in PDF, Excel, and CSV formats, plus
 
 | Library | Description | NuGet |
 |---------|-------------|-------|
-| **NuvTools.Report** | Core report model, PDF abstractions, and Sheet abstractions (CSV, Excel, fixed-length) with attribute-based field mapping and custom converters | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.svg)](https://www.nuget.org/packages/NuvTools.Report/) |
+| **NuvTools.Report** | Core report model, PDF abstractions, Sheet abstractions (CSV, Excel), FixedLength abstractions, and shared parsing utilities — with attribute-based field mapping and custom converters | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.svg)](https://www.nuget.org/packages/NuvTools.Report/) |
 | **NuvTools.Report.Pdf** | PDF generation implementation using QuestPDF and PDFsharp | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.Pdf.svg)](https://www.nuget.org/packages/NuvTools.Report.Pdf/) |
-| **NuvTools.Report.Sheet** | Excel, CSV, and fixed-length file implementation using ClosedXML | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.Sheet.svg)](https://www.nuget.org/packages/NuvTools.Report.Sheet/) |
+| **NuvTools.Report.Sheet** | Excel and CSV implementation using ClosedXML | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.Sheet.svg)](https://www.nuget.org/packages/NuvTools.Report.Sheet/) |
+| **NuvTools.Report.FixedLength** | Fixed-length (positional) file reader implementation | [![NuGet](https://img.shields.io/nuget/v/NuvTools.Report.FixedLength.svg)](https://www.nuget.org/packages/NuvTools.Report.FixedLength/) |
 
 ## Installation
 
@@ -19,8 +20,11 @@ A .NET library suite for generating reports in PDF, Excel, and CSV formats, plus
 # For PDF export
 dotnet add package NuvTools.Report.Pdf
 
-# For Excel/CSV export and CSV/fixed-length reading
+# For Excel and CSV export/reading
 dotnet add package NuvTools.Report.Sheet
+
+# For fixed-length (positional) file reading
+dotnet add package NuvTools.Report.FixedLength
 
 # Or install the base library only (abstractions and models)
 dotnet add package NuvTools.Report
@@ -51,8 +55,8 @@ The library follows an **abstraction-implementation** pattern:
 | `NuvTools.Report.Pdf` | `NuvTools.Report.Pdf.*` (QuestPDF + PDFsharp) |
 | `NuvTools.Report.Sheet.Csv` | `NuvTools.Report.Sheet.Csv` (ClosedXML) |
 | `NuvTools.Report.Sheet.Excel` | `NuvTools.Report.Sheet.Excel` (ClosedXML) |
-| `NuvTools.Report.Sheet.FixedLength` | `NuvTools.Report.Sheet.FixedLength` |
-| `NuvTools.Report.Sheet.Parsing` | Shared parsing utilities and converters |
+| `NuvTools.Report.FixedLength` | `NuvTools.Report.FixedLength` |
+| `NuvTools.Report.Parsing` | Shared parsing utilities and converters (consumed by Csv and FixedLength readers) |
 
 ### Document Model
 
@@ -78,8 +82,9 @@ Document
 using NuvTools.Report.Sheet.Extensions;
 using NuvTools.Report.Pdf.Extensions;
 
-builder.Services.AddSheetReportServices();    // ICsvReader, ICsvExporter, IFixedLengthReader, IExcelExporter
-builder.Services.AddPdfReportServices(); // IPdfExporter, IPdfMerger
+builder.Services.AddSheetReportServices();       // ICsvReader, ICsvExporter, IExcelExporter
+builder.Services.AddFixedLengthReportServices(); // IFixedLengthReader
+builder.Services.AddPdfReportServices();         // IPdfExporter, IPdfMerger
 ```
 
 ### Building a Document
@@ -217,7 +222,7 @@ Map CSV content to strongly-typed objects using attributes:
 ```csharp
 using NuvTools.Report.Sheet.Csv;
 using NuvTools.Report.Sheet.Csv.Attributes;
-using NuvTools.Report.Sheet.Parsing;
+using NuvTools.Report.Parsing;
 
 // Define your record model
 [CsvRecord(Delimiter = CsvDelimiter.Semicolon)]
@@ -292,9 +297,9 @@ string header = typeof(ProductRecord).GetCsvHeader(CsvDelimiter.Semicolon);
 Map fixed-width columns to objects using attributes:
 
 ```csharp
-using NuvTools.Report.Sheet.FixedLength;
-using NuvTools.Report.Sheet.FixedLength.Attributes;
-using NuvTools.Report.Sheet.Parsing;
+using NuvTools.Report.FixedLength;
+using NuvTools.Report.FixedLength.Attributes;
+using NuvTools.Report.Parsing;
 
 // Define your record model
 [FixedLengthRecord(AllowShorterLines = true)]
@@ -345,7 +350,7 @@ public class BankImportService(IFixedLengthReader reader)
 Create custom converters for special parsing logic:
 
 ```csharp
-using NuvTools.Report.Sheet.Parsing.Converters;
+using NuvTools.Report.Parsing.Converters;
 
 // Implement IFieldConverter directly
 public class BrazilianDecimalConverter : IFieldConverter
@@ -407,6 +412,9 @@ The following types are supported out of the box (no custom converter needed):
 ### NuvTools.Report.Sheet
 - ClosedXML
 
+### NuvTools.Report.FixedLength
+- No external runtime dependencies (only the base `NuvTools.Report` package)
+
 ## Building
 
 This solution uses the `.slnx` (XML-based solution) format.
@@ -422,19 +430,21 @@ dotnet test NuvTools.Report.slnx
 ```
 nuvtools-report/
 ├── src/
-│   ├── NuvTools.Report/            # Core models and abstractions
-│   │   ├── Pdf/                    # IPdfExporter, IPdfMerger
+│   ├── NuvTools.Report/                # Core models and abstractions
+│   │   ├── Pdf/                        # IPdfExporter, IPdfMerger
 │   │   ├── Sheet/
-│   │   │   ├── Csv/               # ICsvReader, ICsvExporter, attributes, options
-│   │   │   ├── Excel/             # IExcelExporter
-│   │   │   ├── FixedLength/       # IFixedLengthReader, attributes, options
-│   │   │   └── Parsing/           # TrimMode, ParseException, converters
-│   │   └── Table/Models/          # Document, Table, Info, Style, Body, Row, Cell, Column
-│   ├── NuvTools.Report.Pdf/        # PDF implementation (QuestPDF + PDFsharp)
-│   └── NuvTools.Report.Sheet/      # Sheet implementation (ClosedXML)
+│   │   │   ├── Csv/                    # ICsvReader, ICsvExporter, attributes, options
+│   │   │   └── Excel/                  # IExcelExporter
+│   │   ├── FixedLength/                # IFixedLengthReader, attributes, options
+│   │   ├── Parsing/                    # TrimMode, ParseException, converters (shared)
+│   │   └── Table/Models/               # Document, Table, Info, Style, Body, Row, Cell, Column
+│   ├── NuvTools.Report.Pdf/            # PDF implementation (QuestPDF + PDFsharp)
+│   ├── NuvTools.Report.Sheet/          # Sheet implementation (ClosedXML)
+│   └── NuvTools.Report.FixedLength/    # Fixed-length reader implementation
 ├── tests/
 │   ├── NuvTools.Report.Pdf.Tests/
-│   └── NuvTools.Report.Sheet.Tests/
+│   ├── NuvTools.Report.Sheet.Tests/
+│   └── NuvTools.Report.FixedLength.Tests/
 ├── NuvTools.Report.slnx
 └── README.md
 ```

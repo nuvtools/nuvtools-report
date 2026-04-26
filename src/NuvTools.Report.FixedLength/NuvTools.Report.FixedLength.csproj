@@ -6,7 +6,7 @@
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
-		<Description>Core report model infrastructure with document-table hierarchy, reflection-based data binding, PDF abstractions (IPdfExporter, IPdfMerger), and Sheet abstractions for CSV/Excel/fixed-length file reading and exporting (ICsvReader, ICsvExporter, IExcelExporter, IFixedLengthReader) with attribute-based field mapping and custom converters.</Description>
+		<Description>Implementation of NuvTools.Report.FixedLength abstractions: reflection-based reader for fixed-length (positional) text files with attribute-based field mapping, custom converters, and trim/optional-field support.</Description>
 		<Version>10.3.0</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
@@ -17,15 +17,10 @@
 		<RepositoryType>git</RepositoryType>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageTags>NuvTools Report Table Document Model CSV Excel FixedLength Parsing PDF Abstractions</PackageTags>
+		<PackageTags>NuvTools Report FixedLength Positional Reader Parser Import</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<InternalsVisibleTo Include="NuvTools.Report.Sheet" />
-		<InternalsVisibleTo Include="NuvTools.Report.FixedLength" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\..\icon.png">
@@ -42,6 +37,14 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\NuvTools.Report\NuvTools.Report.csproj" />
 	</ItemGroup>
 
 </Project>

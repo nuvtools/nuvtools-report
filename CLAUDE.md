@@ -4,116 +4,123 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NuvTools.Report is a .NET library suite for generating reports in multiple formats (PDF, Excel, CSV). The solution consists of three NuGet packages targeting .NET 8, .NET 9, and .NET 10:
+NuvTools.Report is a .NET library suite for generating reports (PDF, Excel, CSV) and reading structured input (CSV, fixed-length/positional). It ships **four** NuGet packages multi-targeting net8/net9/net10:
 
-- **src/NuvTools.Report** - Core report model infrastructure with document-table hierarchy and reflection-based data binding
-- **src/NuvTools.Report.Pdf** - PDF generation using QuestPDF and PDFsharp
-- **src/NuvTools.Report.Sheet** - Excel/CSV generation using ClosedXML
+- **src/NuvTools.Report** — Core models *and* abstractions (interfaces, attributes, options, converters) for every implementation package. No external runtime dependencies beyond `Microsoft.Extensions.DependencyInjection.Abstractions` consumers see indirectly.
+- **src/NuvTools.Report.Pdf** — PDF implementation using QuestPDF + PDFsharp.
+- **src/NuvTools.Report.Sheet** — CSV + Excel implementation using ClosedXML.
+- **src/NuvTools.Report.FixedLength** — Fixed-length (positional) text reader. No ClosedXML dependency.
 
-All libraries are published as NuGet packages. No test projects exist in the solution.
+Tests live under `tests/` (NUnit 4.x, **net10.0 only**).
 
 ## Build and Test Commands
 
-**Note:** This solution uses the modern `.slnx` (XML-based solution) format introduced in Visual Studio 2022 v17.11.
+The solution uses the `.slnx` (XML-based) format (VS 2022 v17.11+).
 
-### Build the solution
 ```bash
+# Build everything
 dotnet build NuvTools.Report.slnx
+
+# Release build (also produces NuGet packages — GeneratePackageOnBuild is on)
+dotnet build NuvTools.Report.slnx -c Release
+
+# Run all tests
+dotnet test NuvTools.Report.slnx
+
+# Run tests for a single project
+dotnet test tests/NuvTools.Report.Sheet.Tests/NuvTools.Report.Sheet.Tests.csproj
+
+# Filter by test name (NUnit fully-qualified)
+dotnet test --filter "FullyQualifiedName~CsvExporterTests"
 ```
 
-### Build for specific configuration
-```bash
-dotnet build NuvTools.Report.slnx --configuration Release
+## Architecture
+
+### Abstraction / implementation split
+
+The core `NuvTools.Report` package owns **all** interfaces, attributes, options, models, and converter contracts so the application layer (clean-architecture style) only references the abstraction package; the composition root injects concrete implementations. Each implementation package consumes those contracts.
+
+When adding a new feature, the contract usually belongs in `NuvTools.Report` and the implementation in `NuvTools.Report.Pdf`, `NuvTools.Report.Sheet`, or `NuvTools.Report.FixedLength`.
+
+```
+NuvTools.Report                          Implementation packages
+─────────────────────────                ─────────────────────────────
+Pdf/IPdfExporter, IPdfMerger      ←──    NuvTools.Report.Pdf
+                                          (Pdf.Table.PdfExporter, Pdf.Util.PdfMerger)
+Sheet/Csv/ICsvReader, ICsvExporter ←──   NuvTools.Report.Sheet
+Sheet/Excel/IExcelExporter         ←──   (Sheet.Csv.{CsvReader,CsvExporter},
+                                           Sheet.Excel.ExcelExporter)
+FixedLength/IFixedLengthReader     ←──   NuvTools.Report.FixedLength
+                                          (FixedLength.FixedLengthReader)
+Parsing/{IFieldConverter, FieldConverter<T>,
+  BuiltInConverters, TrimMode,
+  ParseException}                          shared by Csv and FixedLength readers
+Sheet/Csv/Attributes
+FixedLength/Attributes
+Table/Models (Document, Table, Info,
+  Style, Body, Header, Column, Row, Cell)
 ```
 
-## Architecture and Key Components
+`NuvTools.Report` declares `[InternalsVisibleTo("NuvTools.Report.Sheet")]` so the Sheet implementation can use internal helpers (e.g., `BuiltInConverters`) without exposing them publicly. The same will apply to `NuvTools.Report.FixedLength` if it ever needs internal access — currently it only uses public types.
 
-### Core Model Pattern
+**Note:** FixedLength is *not* under the `Sheet` namespace — fixed-length files are flat positional records (banking, EDI, mainframe) unrelated to spreadsheet rendering. Shared parsing types live at `NuvTools.Report.Parsing` (no `Sheet` prefix) precisely because both Csv and FixedLength readers consume them.
 
-The library uses a **document-table-component hierarchy**:
+### DI registration
+
+Each implementation package exposes a `ServiceCollectionExtensions` registering the public interfaces as singletons:
+
+- `AddPdfReportServices()` → `IPdfExporter`, `IPdfMerger`
+- `AddSheetReportServices()` → `ICsvReader`, `ICsvExporter`, `IExcelExporter`
+- `AddFixedLengthReportServices()` → `IFixedLengthReader`
+
+Implementations are stateless — keep them that way so the singleton registration stays valid.
+
+### Document / table model (export pipeline)
+
+Hierarchy used by the PDF and Excel exporters:
 
 ```
 Document
 └── Tables (List<Table>)
-    ├── Info (metadata: name, title, company info, issue date/user)
-    ├── Style (formatting: colors, fonts)
+    ├── Info       (title, company, logo, issue date/user, filter description)
+    ├── Style      (header colors, font, bold, line gray)
     └── Content (Body)
-        ├── Header
-        │   └── Columns (List<Column>)
-        └── Rows (List<Row>)
-            └── Cells (List<Cell>)
+        ├── Header → List<Column>   (Name = property to bind, Label, Order, Format)
+        └── Rows   → List<Row> → List<Cell>   (each Cell references a Column + Value)
 ```
 
-### NuvTools.Report Library
+`Table.SetRows<T>(columns, items)` is the reflection-based binder: it copies the column list into `Body.Header`, then for each item in `items` it reads `Column.Name` as a property name on `T` and emits one `Cell` per column. Format strings on `Column` are applied during rendering, not during binding.
 
-Core model classes in `Table/Models/`:
+Output of the PDF/Excel/CSV exporters is always **base64-encoded** for direct API transmission. `ICsvExporter.ExportToCsv` returns one base64 string per table; `ExportFirstSheetToCsv` returns a single string.
 
-- `Document` - Top-level container with `BackgroundDocumentHeaderColor` and `Tables` list
-- `Table` - Individual table with `Info`, `Style`, and `Content` (Body). Contains `SetRows<T>()` for reflection-based data population
-- `Info` - Metadata (Order, Name, Title, CompanyAbbreviation, CompanyUrl, LogoImage, FilterDescription, IssueDate, IssueUser)
-- `Style` - Formatting (Bold, FontSize, BackgroundLineGray, BackgroundHeaderColor, FontHeaderColor)
+### Attribute-driven import pipeline
 
-Component classes in `Table/Models/Components/`:
+`ICsvReader` (in `NuvTools.Report.Sheet`) and `IFixedLengthReader` (in `NuvTools.Report.FixedLength`) map text input to `T` using:
 
-- `Body` - Container for Header and Rows
-- `Header` - Container for Columns
-- `Column` - Column definition (Name for reflection, Label, Order, Format)
-- `Row` - Data row with Order and Cells list
-- `Cell` - Individual cell with Column reference and Value string
+- `[CsvRecord]` / `[FixedLengthRecord]` on the class (record-level options like delimiter or `AllowShorterLines`).
+- `[CsvField(index, ...)]` / `[FixedLengthField(index, length, ...)]` on each property (position, format, trim, optional, custom converter).
 
-### NuvTools.Report.Pdf Library
+Type conversion goes through `Parsing/Converters` in the base `NuvTools.Report` package:
 
-PDF generation classes in `Table/`:
+- `BuiltInConverters` covers string/int/long/short/decimal/double/float/bool/DateTime/DateOnly/Guid/enums and their nullable variants (numerics use `InvariantCulture`; bool accepts `true|false|1|0`). It is `internal` to `NuvTools.Report` and exposed to implementation packages via `InternalsVisibleTo`.
+- For anything custom, implement `IFieldConverter` (untyped) or extend `FieldConverter<T>` (typed) and reference the converter type via `Converter = typeof(...)` on the field attribute. The `Format` attribute property is forwarded to the converter.
 
-- `PdfExtension` (static) - Extension methods on `Document`:
-  - `ExportSheetToPdf()` - All tables as separate base64 PDF strings
-  - `ExportFirstSheetToPdf()` - First table as base64 PDF string
-- `PdfSheet` (internal) - QuestPDF `IDocument` implementation with page layout (header/content/footer)
-- `PdfTable` (internal) - QuestPDF `IComponent` for table content rendering
-- `PdfHeader` (internal) - Header with title, filter description, logo/company info
-- `PdfFooter` (internal) - Footer with issue user, date, and page numbers
+When extending parsing, add the converter under `Parsing/Converters` in **NuvTools.Report** (not the implementation packages) so both readers can use it.
 
-Utility class in `Util/`:
+### CSV specifics
 
-- `PdfUtil` (static) - `Merge(IEnumerable<byte[]>)` for merging multiple PDFs using PDFsharp
+- Default delimiter is **comma** (RFC 4180); `CsvDelimiter` enum also covers `Semicolon`, `Tab`, `Pipe`, `Custom`.
+- `ICsvExporter` defaults to including a header row and **sanitizing** delimiter occurrences from values to prevent corruption. Both are toggleable per call (`includeHeader`, `sanitizeDelimiter`).
+- `CsvReaderOptions` can override the attribute-declared delimiter at runtime, plus `SkipHeader`, `IgnoreEmptyLines`, `HandleQuotedFields`.
+- `CsvFieldExtensions` exposes `GetFieldCaptions()` and `GetCsvHeader(delimiter)` for emitting header lines from a record type.
 
-### NuvTools.Report.Sheet Library
+### PDF specifics
 
-Extension classes in `Extensions/`:
+`PdfExporter` builds a QuestPDF `IDocument` per table (`PdfSheet`) composed of `PdfHeader` / `PdfTable` / `PdfFooter`. `PdfMerger.Merge(IEnumerable<byte[]>)` uses PDFsharp to concatenate already-rendered PDFs — use it when callers need a single file from multi-table output.
 
-- `ExcelExtension` (static) - `ExportToExcel()` returns base64 Excel workbook with styled headers, column definitions, and data rows
-- `CsvExtensions` (static) - `ExportToCsv()` / `ExportFirstSheetToCsv()` returns base64 CSV with semicolon delimiter
+## Conventions
 
-### Data Population
-
-`Table.SetRows<T>()` uses reflection to populate table content:
-1. Converts Column list to Header
-2. Iterates through object list
-3. Uses `GetPropertyValue<T>()` to extract property values matching `Column.Name`
-4. Creates Cell for each Column/property pair
-5. Builds Row list from Cells
-
-### Output Format
-
-All export methods return **base64-encoded strings** for easy API transmission.
-
-## Dependencies
-
-### NuvTools.Report
-- No external package dependencies
-
-### NuvTools.Report.Pdf
-- QuestPDF [2025.12.3,2026.1.0)
-- PDFsharp [6.2.4,6.3.0)
-- NuvTools.Report (project reference)
-
-### NuvTools.Report.Sheet
-- ClosedXML [0.105.0,0.106.0)
-- NuvTools.Report (project reference)
-
-## Code Style and Conventions
-
-- **Nullable reference types** are enabled (`<Nullable>enable</Nullable>`)
-- **Implicit usings** are enabled (`<ImplicitUsings>enable</ImplicitUsings>`)
-- **Code style enforcement** is enabled during build (`<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>`)
-- **XML documentation generation** is required (`<GenerateDocumentationFile>True</GenerateDocumentationFile>`)
+- Nullable reference types **on**; implicit usings **on**; `EnforceCodeStyleInBuild` **on**; XML doc generation required (public APIs must be documented).
+- Library projects target `net8;net9;net10.0`. Test projects target **net10.0 only** — do not multi-target test code.
+- Public types belong in `NuvTools.Report` (the abstraction package) unless they are inherently tied to QuestPDF/PDFsharp/ClosedXML.
+- New DI-registrable services should be added to the matching `ServiceCollectionExtensions` and registered as singletons (state-free).
