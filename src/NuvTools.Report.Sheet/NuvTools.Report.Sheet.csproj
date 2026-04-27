@@ -7,7 +7,7 @@
 		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<Description>Implementation of NuvTools.Report.Sheet abstractions: Excel export with multi-sheet workbooks and styled formatting using ClosedXML, and CSV export and reading with RFC 4180 support. All output encoded as base64 for easy API transmission.</Description>
-		<Version>10.3.0</Version>
+		<Version>10.3.1</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>

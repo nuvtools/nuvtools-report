@@ -47,6 +47,9 @@ internal static class BuiltInConverters
         if (underlyingType == typeof(DateOnly))
             return ConvertDateOnly(value, format);
 
+        if (underlyingType == typeof(TimeOnly))
+            return ConvertTimeOnly(value, format);
+
         if (underlyingType == typeof(Guid))
             return Guid.Parse(value);
 
@@ -78,4 +81,9 @@ internal static class BuiltInConverters
         string.IsNullOrEmpty(format)
             ? DateOnly.Parse(value, CultureInfo.InvariantCulture)
             : DateOnly.ParseExact(value, format, CultureInfo.InvariantCulture);
+
+    private static TimeOnly ConvertTimeOnly(string value, string? format) =>
+        string.IsNullOrEmpty(format)
+            ? TimeOnly.Parse(value, CultureInfo.InvariantCulture)
+            : TimeOnly.ParseExact(value, format, CultureInfo.InvariantCulture);
 }
