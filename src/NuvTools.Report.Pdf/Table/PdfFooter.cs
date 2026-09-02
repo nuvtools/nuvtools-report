@@ -18,8 +18,10 @@ internal class PdfFooter(Report.Table.Models.Table model) : IComponent
     /// </summary>
     /// <param name="container">The container to render the footer into.</param>
     /// <remarks>
-    /// The footer displays the issue user name and current timestamp on the left,
+    /// The footer displays the issue user name and the report's issue timestamp on the left,
     /// and page numbers (current/total) on the right in a light gray color.
+    /// The timestamp comes from <see cref="Report.Table.Models.Info.IssueDate"/> (set by the caller in the
+    /// desired time zone); it falls back to <see cref="DateTime.Now"/> only when the caller left it unset.
     /// </remarks>
     public void Compose(IContainer container)
     {
@@ -28,7 +30,7 @@ internal class PdfFooter(Report.Table.Models.Table model) : IComponent
             .PaddingHorizontal(22)
             .Row(row =>
             {
-                row.RelativeItem().AlignMiddle().Text($"{Model.Info.IssueUser?.ToUpper()} - {DateTime.Now}")
+                row.RelativeItem().AlignMiddle().Text($"{Model.Info.IssueUser?.ToUpper()} - {Model.Info.IssueDate ?? DateTime.Now}")
                     .FontSize(9)
                     .FontColor("#AAAAAA");
 
