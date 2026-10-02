@@ -215,6 +215,8 @@ public class ReportService(ICsvExporter csvExporter)
 }
 ```
 
+The output is UTF-8 with a byte order mark, so Excel opens non-ASCII text correctly. Date values are written with `Column.Format` when one is set; give date columns an explicit format (e.g. `yyyy-MM-dd HH:mm:ss`) so the output does not depend on the server culture.
+
 ### CSV Reading / Importing
 
 Map CSV content to strongly-typed objects using attributes:

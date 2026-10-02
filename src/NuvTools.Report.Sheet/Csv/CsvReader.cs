@@ -61,7 +61,7 @@ public class CsvReader : ICsvReader
     {
         var mappings = MetadataCache.GetOrAdd(typeof(T), BuildMappings);
         var delimiter = ResolveDelimiter<T>(options);
-        var lines = SplitLines(content);
+        var lines = SplitLines(content.TrimStart('﻿'));
 
         var startIndex = options.SkipHeader ? 1 : 0;
         var results = new List<T>();

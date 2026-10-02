@@ -220,6 +220,98 @@ public class CsvExporterTests
         Assert.That(lines[1], Is.EqualTo("A,B"));
     }
 
+    [Test]
+    public void ExportFirstSheetToCsv_StartsWithUtf8ByteOrderMark()
+    {
+        var document = CreateDocument(
+        [
+            CreateTable("Sheet1", [["Café", "B1"]])
+        ]);
+
+        var bytes = Convert.FromBase64String(_exporter.ExportFirstSheetToCsv(document));
+
+        Assert.That(bytes.Take(3), Is.EqualTo(new byte[] { 0xEF, 0xBB, 0xBF }));
+        Assert.That(DecodeBase64ToLines(Convert.ToBase64String(bytes))[0], Is.EqualTo("Café,B1"));
+    }
+
+    [Test]
+    public void ExportFirstSheetToCsv_ColumnFormat_FormatsDateValues()
+    {
+        var date = new DateTimeOffset(2026, 10, 2, 23, 12, 35, TimeSpan.Zero);
+        var columns = new List<Column>
+        {
+            new() { Name = nameof(DatedItem.Name), Label = "Name", Order = 1 },
+            new() { Name = nameof(DatedItem.Date), Label = "Date", Order = 2, Format = "yyyy-MM-dd HH:mm:ss" }
+        };
+
+        var table = new Table.Models.Table
+        {
+            Info = new Info { Name = "Sheet1", Order = 1 },
+            Content = new Body()
+        };
+        table.SetRows(columns, [new DatedItem { Name = "A", Date = date }]);
+
+        var lines = DecodeBase64ToLines(_exporter.ExportFirstSheetToCsv(new Document { Tables = [table] }));
+
+        Assert.That(lines[1], Is.EqualTo("A,2026-10-02 23:12:35"));
+    }
+
+    [Test]
+    public void ExportFirstSheetToCsv_ColumnFormat_ParsesNarrowNoBreakSpaceBeforeDesignator()
+    {
+        var column = new Column { Order = 1, Format = "yyyy-MM-dd HH:mm:ss" };
+        var table = new Table.Models.Table
+        {
+            Info = new Info { Name = "Sheet1", Order = 1 },
+            Content = new Body
+            {
+                Rows = [new Row { Order = 1, Cells = [new Cell { Column = column, Value = "10/2/2026 11:12:35 PM +00:00" }] }]
+            }
+        };
+
+        var previous = Thread.CurrentThread.CurrentCulture;
+        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+        try
+        {
+            var lines = DecodeBase64ToLines(_exporter.ExportFirstSheetToCsv(new Document { Tables = [table] }));
+
+            Assert.That(lines[0], Is.EqualTo("2026-10-02 23:12:35"));
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentCulture = previous;
+        }
+    }
+
+    [Test]
+    public void ExportFirstSheetToCsv_ReadBackWithCsvReader_IgnoresByteOrderMark()
+    {
+        var document = CreateDocument(
+        [
+            CreateTable("Sheet1", [["Café", "B1"]])
+        ]);
+
+        var records = new CsvReader().ReadBase64<TextRecord>(_exporter.ExportFirstSheetToCsv(document));
+
+        Assert.That(records[0].First, Is.EqualTo("Café"));
+    }
+
+    private class DatedItem
+    {
+        public string Name { get; set; } = null!;
+        public DateTimeOffset? Date { get; set; }
+    }
+
+    [NuvTools.Report.Sheet.Csv.Attributes.CsvRecord]
+    private class TextRecord
+    {
+        [NuvTools.Report.Sheet.Csv.Attributes.CsvField(0)]
+        public string First { get; set; } = null!;
+
+        [NuvTools.Report.Sheet.Csv.Attributes.CsvField(1)]
+        public string Second { get; set; } = null!;
+    }
+
     private static Document CreateDocument(List<Table.Models.Table> tables)
     {
         return new Document { Tables = tables };

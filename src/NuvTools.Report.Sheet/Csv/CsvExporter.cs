@@ -1,4 +1,6 @@
+using System.Text;
 using NuvTools.Report.Table.Models;
+using NuvTools.Report.Table.Models.Components;
 
 namespace NuvTools.Report.Sheet.Csv;
 
@@ -53,11 +55,22 @@ public class CsvExporter : ICsvExporter
         foreach (var row in table.Content.Rows)
         {
             var cells = row.Cells.OrderBy(c => c.Column.Order).ToList();
-            var line = string.Join(delimiter, cells.Select(c => Sanitize(c.Value, delimiter, sanitizeDelimiter)));
+            var line = string.Join(delimiter, cells.Select(c => Sanitize(FormatValue(c), delimiter, sanitizeDelimiter)));
             lines.Add(line);
         }
 
         return lines;
+    }
+
+    /// <summary>
+    /// Applies the column format to date values, leaving every other value untouched.
+    /// </summary>
+    private static string? FormatValue(Cell cell)
+    {
+        if (!string.IsNullOrEmpty(cell.Column.Format) && DateTimeOffset.TryParse(cell.Value, out var date))
+            return date.ToString(cell.Column.Format);
+
+        return cell.Value;
     }
 
     /// <summary>
@@ -74,10 +87,13 @@ public class CsvExporter : ICsvExporter
     /// <summary>
     /// Converts a list of CSV lines to a base64-encoded string.
     /// </summary>
+    /// <remarks>
+    /// The content is UTF-8 with a byte order mark, which Excel requires to detect the encoding.
+    /// </remarks>
     private static string ConvertToBase64String(List<string> lines)
     {
         using MemoryStream ms = new();
-        var sw = new StreamWriter(ms);
+        var sw = new StreamWriter(ms, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
 
         lines.ForEach(a => sw.WriteLine(a));
         sw.Flush();

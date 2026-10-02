@@ -111,6 +111,7 @@ When extending parsing, add the converter under `Parsing/Converters` in **NuvToo
 
 - Default delimiter is **comma** (RFC 4180); `CsvDelimiter` enum also covers `Semicolon`, `Tab`, `Pipe`, `Custom`.
 - `ICsvExporter` defaults to including a header row and **sanitizing** delimiter occurrences from values to prevent corruption. Both are toggleable per call (`includeHeader`, `sanitizeDelimiter`).
+- `CsvExporter` writes UTF-8 **with a BOM** (Excel reads a BOM-less CSV as ANSI) and applies `Column.Format` to date values, like the Excel and PDF exporters. `CsvReader` strips a leading BOM.
 - `CsvReaderOptions` can override the attribute-declared delimiter at runtime, plus `SkipHeader`, `IgnoreEmptyLines`, `HandleQuotedFields`.
 - `CsvFieldExtensions` exposes `GetFieldCaptions()` and `GetCsvHeader(delimiter)` for emitting header lines from a record type.
 
