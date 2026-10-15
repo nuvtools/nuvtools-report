@@ -451,6 +451,57 @@ nuvtools-report/
 └── README.md
 ```
 
+## Releasing
+
+Publishing to nuget.org is irreversible per version, so the workflow makes it the last and smallest
+step.
+
+**One workflow per library.** Each package has its own, so a run and an approval each concern
+exactly one package. The steps themselves are shared, in the reusable `package-publish.yml`.
+
+| Package | Workflow | Release tag |
+|---|---|---|
+| `NuvTools.Report` | `report-publish.yml` | `report-vX.Y.Z` |
+| `NuvTools.Report.FixedLength` | `fixedlength-publish.yml` | `fixedlength-vX.Y.Z` |
+| `NuvTools.Report.Pdf` | `pdf-publish.yml` | `pdf-vX.Y.Z` |
+| `NuvTools.Report.Sheet` | `sheet-publish.yml` | `sheet-vX.Y.Z` |
+
+1. Set the package's `<Version>` in its `.csproj` and merge it. That is the version that gets
+   published; the workflow reads it and never computes one.
+2. Run the library's workflow by hand (*Actions → Report Publish → Run workflow*) with *push*
+   checked.
+3. The workflow builds the solution with `-warnaserror`, runs the tests, takes **that package only**
+   from the build output, verifies it carries its README, licence, icon, symbols and every target
+   framework, and then waits for approval on the `nuget` GitHub Environment before pushing.
+4. **After the push succeeds, the workflow tags the commit** with the tag in the table above. The tag is a
+   record of what is on nuget.org, never what starts a release, so it cannot exist for a version
+   that did not get there. A run whose tag already exists stops before building: the version has
+   been released and `<Version>` needs a bump.
+
+**A referenced package goes first.** A package that references another of this repository as a
+project depends on whatever `<Version>` that one has in the commit. The workflow checks that
+version is on nuget.org and refuses to push a package whose dependency is not there yet. So:
+
+- `NuvTools.Report` before `NuvTools.Report.FixedLength`, `NuvTools.Report.Pdf` and `NuvTools.Report.Sheet`.
+
+That check knows a version exists, not what is in it: when a referenced package changes its public
+API, bump and publish it first, then bump and publish the packages built on it.
+
+**Versions published by hand are refused.** Releases made before these workflows exist on nuget.org
+with no tag. Pushing one again would skip the duplicate and then tag the current commit as a
+release it is not, so a version that is already on nuget.org stops the run. The exception is a
+re-run of the same run, which is how a push that succeeded and a tag that failed gets finished.
+
+**No API key is stored.** The push uses nuget.org's trusted publishing: the job presents a GitHub
+OIDC token, nuget.org checks it against the policy registered for this repository and answers with a
+key that lives for one hour. The repository needs one secret, `NUGET_USER` — the nuget.org profile
+name the policy belongs to — and the policy itself, registered under *Trusted Publishing* on
+nuget.org with the owner `nuvtools`, the repository `nuvtools-report`, the workflow file and the
+environment `nuget`.
+
+Run a library's workflow by hand with *push* unchecked for a dry run that stops after the
+verification.
+
 ## License
 
 This project requires license acceptance. See the [LICENSE](LICENSE) file for details.
