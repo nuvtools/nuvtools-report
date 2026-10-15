@@ -40,12 +40,10 @@ public class PdfMergerTests
     }
 
     [Test]
-    public void Merge_EmptyCollection_ReturnsValidPdfBytes()
+    public void Merge_EmptyCollection_ThrowsArgumentException()
     {
-        var result = _merger.Merge([]);
-
-        Assert.That(result, Is.Not.Null.And.Not.Empty);
-        Assert.That(result[0], Is.EqualTo((byte)'%'));
+        // A PDF with no pages is not a valid PDF, so there is nothing correct to return.
+        Assert.Throws<ArgumentException>(() => _merger.Merge([]));
     }
 
     private byte[] GeneratePdfBytes(string name, List<string[]> rowData)

@@ -92,6 +92,20 @@ public class ExcelExporterTests
     }
 
     [Test]
+    public void ExportToExcel_TableWithoutStyle_UsesTheDefaultColors()
+    {
+        var table = CreateTable("Plain", 1, [["Data1"]]);
+        table.Style = null;
+
+        var base64 = _exporter.ExportToExcel(CreateDocument([table]));
+        using var workbook = OpenWorkbook(base64);
+
+        var ws = workbook.Worksheets.Worksheet(1);
+        Assert.That(ws.Cell(1, 1).GetString(), Is.EqualTo("Test Title"));
+        Assert.That(ws.Cell(8, 1).GetString(), Is.EqualTo("Data1"));
+    }
+
+    [Test]
     public void ExportToExcel_ColumnHeaders_MatchLabels()
     {
         var col1 = new Column { Order = 1, Label = "Name", Name = "Name" };

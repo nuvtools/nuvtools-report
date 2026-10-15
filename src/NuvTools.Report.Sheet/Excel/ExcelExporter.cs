@@ -39,13 +39,16 @@ public class ExcelExporter : IExcelExporter
 
         if (includeHeader)
         {
+            // A table without a style gets the default colors rather than failing.
+            var tableStyle = worksheet.Style ?? new Style();
+
             AddWorksheetText(xlWorksheet, rowIndex, worksheet.Info.Title ?? string.Empty,
                 new Style
                 {
                     Bold = true,
                     FontSize = 14.0,
-                    BackgroundHeaderColor = worksheet.Style!.BackgroundHeaderColor,
-                    FontHeaderColor = worksheet.Style.FontHeaderColor
+                    BackgroundHeaderColor = tableStyle.BackgroundHeaderColor,
+                    FontHeaderColor = tableStyle.FontHeaderColor
                 });
 
             AddWorksheetText(xlWorksheet, ++rowIndex,
@@ -53,8 +56,8 @@ public class ExcelExporter : IExcelExporter
                 new Style
                 {
                     FontSize = 12,
-                    BackgroundHeaderColor = worksheet.Style.BackgroundHeaderColor,
-                    FontHeaderColor = worksheet.Style.FontHeaderColor
+                    BackgroundHeaderColor = tableStyle.BackgroundHeaderColor,
+                    FontHeaderColor = tableStyle.FontHeaderColor
                 });
 
             rowIndex++; ;

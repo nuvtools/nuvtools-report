@@ -56,7 +56,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
-		<PackageReference Include="PDFsharp" Version="6.5.0" />
+		<!-- Held at 6.2.4, the last MIT release: from 6.5.0 PDFsharp is AGPL-3.0-only and refuses to
+		     run without a license. Do not update it without a license decision. -->
+		<PackageReference Include="PDFsharp" Version="6.2.4" />
 		<PackageReference Include="QuestPDF" Version="2026.9.1" />
 		<!-- PDFsharp only asks for 8.0.1, which has known vulnerabilities; this lifts it to the
 		     patched release. -->

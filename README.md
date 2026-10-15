@@ -161,6 +161,16 @@ public class ReportService(IPdfExporter pdfExporter, IPdfMerger pdfMerger)
 }
 ```
 
+**QuestPDF license.** QuestPDF refuses to render until the application declares which of its
+licenses applies, and that choice belongs to the application, not to this package. Set it once at
+startup, before the first export:
+
+```csharp
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community; // or Professional / Enterprise
+```
+
+See [QuestPDF licensing](https://www.questpdf.com/license/) for which one applies to you.
+
 ### Excel Export
 
 ```csharp
@@ -408,8 +418,8 @@ The following types are supported out of the box (no custom converter needed):
 ## Dependencies
 
 ### NuvTools.Report.Pdf
-- QuestPDF
-- PDFsharp
+- QuestPDF — the application must declare its license (see *PDF Export*)
+- PDFsharp — held at 6.2.4, the last MIT release; 6.5.0 onwards is AGPL-3.0-only
 
 ### NuvTools.Report.Sheet
 - ClosedXML
